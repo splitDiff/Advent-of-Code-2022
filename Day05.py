@@ -9,7 +9,6 @@ class move:
     from_col: int
     to_col: int
 
-
 def parse():
     data = open("Day05.txt", "r")
     return list(data)
@@ -48,7 +47,6 @@ def get_moves(data):
         to_col = int(match.groups()[2])
 
         moves.append(move(qty,from_col,to_col))
-
     return moves
 
 def make_moves(cols:list[deque], moves:list[move]):
@@ -58,8 +56,17 @@ def make_moves(cols:list[deque], moves:list[move]):
             cols[move.to_col].appendleft(item)
     return cols
 
+def make_moves_2(cols:dict[int:deque], moves:list[move]):
+    for move in moves:
+        items = deque()
+        for i in range(move.qty):
+            items.append(cols[move.from_col].popleft())
+        for i in range(move.qty):
+            cols[move.to_col].appendleft(items.pop())
+    return cols
 
-def get_results(cols:list[deque]):
+
+def get_results(cols:dict[int:deque]):
     result = []
     for i in sorted(cols.keys()):
         result.append(cols[i].popleft())
@@ -72,12 +79,10 @@ def part1(data):
     return get_results(results)
 
 def part2(data):
-    ...
-
-
-
-
-
+    cols = get_cols(data)
+    moves = get_moves(data)
+    results = make_moves_2(cols,moves)
+    return get_results(results)
 
 test_data = """    [D]    
 [N] [C]    
@@ -92,6 +97,6 @@ move 1 from 1 to 2""".split('\n')
 
 if __name__ == '__main__':
     data = parse()
-    data = test_data
+    # data = test_data
     print(f"Part 1 - {part1(data)}")
     print(f"Part 2 - {part2(data)}")
